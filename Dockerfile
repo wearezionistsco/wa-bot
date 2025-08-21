@@ -47,7 +47,8 @@ WORKDIR /app
 
 # Copy package.json dan install dependencies
 COPY package*.json ./
-RUN npm install
+
+RUN npm install --production
 
 # Copy semua file project
 COPY . .
