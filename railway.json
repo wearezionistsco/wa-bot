@@ -1,8 +1,14 @@
 {
-  "build": {
-    "builder": "DOCKERFILE"
+  "name": "wa-bot",
+  "version": "1.0.0",
+  "description": "WhatsApp bot dengan whatsapp-web.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
   },
-  "deploy": {
-    "startCommand": "npm start"
+  "dependencies": {
+    "puppeteer": "^22.0.0",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.26.0"
   }
 }
