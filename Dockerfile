@@ -21,16 +21,14 @@ RUN apt-get update && apt-get install -y \
   xdg-utils \
   && rm -rf /var/lib/apt/lists/*
 
-# Set working dir
 WORKDIR /app
 
-# Copy files
 COPY package*.json ./
 RUN npm install
 
 COPY . .
 
-# Set puppeteer chromium path
+# Path Chromium biar Puppeteer bisa jalan
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 CMD ["npm", "start"]
