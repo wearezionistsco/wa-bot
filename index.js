@@ -1,11 +1,14 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
-const qrcode = require("qrcode-terminal");
 
 // ================= CONFIG =================
 const ADMIN = "6287756266682@c.us"; // ganti dengan nomor adminmu
-const EXCLUDED_NUMBERS = [ADMIN];
+const EXCLUDED_NUMBERS = [
+  ADMIN,
+  "6285179911407@c.us", // contoh
+  "6289876543210@c.us"  // contoh
+];
 
-let IZIN_TELEPON = [];
+let IZIN_TELEPON = []; // daftar nomor yang diizinkan telepon
 let userState = {};   // simpan state menu per user
 
 // ================= MENU =================
@@ -47,17 +50,14 @@ const client = new Client({
   },
 });
 
-// QR Code muncul di terminal Railway & dikirim ke WA admin
-client.on("qr", async (qr) => {
-  console.log("🔑 Scan QR Code ini:");
-  qrcode.generate(qr, { small: true });
-  await client.sendMessage(ADMIN, "🔑 QR Code baru muncul, silakan scan di terminal Railway.");
+// QR Code muncul di Railway log sebagai link
+client.on("qr", (qr) => {
+  const qrLink = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`;
+  console.log("🔑 Scan QR lewat link ini (buka di browser):");
+  console.log(qrLink);
 });
 
-client.on("ready", async () => {
-  console.log("✅ Bot WhatsApp aktif!");
-  await client.sendMessage(ADMIN, "✅ Bot sudah aktif dan siap digunakan.");
-});
+client.on("ready", () => console.log("✅ Bot WhatsApp aktif!"));
 
 // ================= HANDLER CHAT =================
 client.on("message", async (msg) => {
@@ -91,7 +91,6 @@ client.on("message", async (msg) => {
     if (["1","2","3","4","5","6"].includes(chat)) {
       const nominal = ["150","200","300","500","1/2","1"][parseInt(chat)-1];
       userState[from] = "menu";
-      await client.sendMessage(ADMIN, `💰 User ${from} melakukan TOP UP ${nominal}`);
       return msg.reply(`✅ TOP UP ${nominal} diproses. Terima kasih!`);
     }
     if (chat === "0") {
@@ -106,10 +105,7 @@ client.on("message", async (msg) => {
     if (chat === "2") return msg.reply("📌 Gadai dicatat.");
     if (chat === "3") return msg.reply("📌 HP dicatat.");
     if (chat === "4") return msg.reply("📌 Barang lain dicatat.");
-    if (chat === "5") {
-      await client.sendMessage(ADMIN, `📞 User ${from} meminta izin telepon admin.`);
-      return msg.reply("📞 Permintaan telepon admin dikirim.");
-    }
+    if (chat === "5") return msg.reply("📞 Permintaan telepon admin dikirim.");
     if (chat === "0") {
       userState[from] = "menu";
       return msg.reply(menuUtama);
@@ -146,29 +142,10 @@ client.on("call", async (call) => {
       call.from,
       "❌ Maaf, panggilan ke admin tidak diizinkan.\nKetik 2 > 5 untuk minta izin telepon."
     );
-    await client.sendMessage(
-      ADMIN,
-      `🚫 Panggilan ditolak dari: ${call.from}`
-    );
     console.log("Panggilan ditolak dari:", call.from);
   } else {
-    await client.sendMessage(
-      ADMIN,
-      `✅ Panggilan diizinkan dari: ${call.from}`
-    );
     console.log("Panggilan diizinkan dari:", call.from);
   }
-});
-
-// ================= ERROR HANDLER =================
-client.on("auth_failure", async (msg) => {
-  console.error("❌ Auth failure:", msg);
-  await client.sendMessage(ADMIN, "❌ Auth failure! Silakan scan ulang QR di Railway.");
-});
-
-client.on("disconnected", async (reason) => {
-  console.error("⚠️ Bot terputus:", reason);
-  await client.sendMessage(ADMIN, "⚠️ Bot terputus. Railway akan mencoba restart otomatis.");
 });
 
 // Jalankan bot
