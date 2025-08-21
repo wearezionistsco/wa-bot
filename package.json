@@ -1,14 +1,16 @@
 {
   "name": "wa-bot",
   "version": "1.0.0",
-  "description": "WhatsApp bot dengan whatsapp-web.js",
+  "description": "WhatsApp Bot dengan whatsapp-web.js untuk Railway",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
-    "puppeteer": "^22.0.0",
+    "whatsapp-web.js": "^1.25.0",
     "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.26.0"
+    "puppeteer": "^21.11.0"
   }
 }
